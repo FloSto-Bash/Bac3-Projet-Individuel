@@ -1,0 +1,4 @@
+pyscript
+monaco-editor
+svelte
+d3-scale

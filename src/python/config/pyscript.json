@@ -1,0 +1,3 @@
+{
+    "package": ["pyscript", "ast", "time"]
+}
