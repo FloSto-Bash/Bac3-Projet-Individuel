@@ -35,7 +35,7 @@
         
         // review this to avoid a loading image issue
         if (window.innerWidth > 1024) {
-        height = window.innerHeight * 0.73;
+            height = window.innerHeight * 0.73;
         } else {
             height = window.innerHeight * 0.48;
         }
@@ -43,7 +43,6 @@
         if (height < 478 * 0.98) {
             height = 478 * 0.98;
         }
-        
         
         console.assert(width !== undefined || height !== undefined, 'width or height is undefined');
         console.assert(typeof width === 'number' || typeof height === 'number', 'width or height is not a number');
@@ -53,6 +52,9 @@
         divEl.style.height = `${height}px`;
         if (editor) {
             editor.layout();
+            editor.updateOptions({
+                fontSize: window.innerWidth > 1024 ? 14 : 12
+            });
         }
     }
 
@@ -84,7 +86,7 @@
             language: "python",
             theme: editorMode ? "vs-dark" : "vs-light",
             readOnly: false,
-            fontSize: 18,
+            fontSize: window.innerWidth > 1024 ? 14 : 12,
         });
 
         /**
@@ -162,16 +164,5 @@
     });
 </script>
 
-<style>
-    #editor {
-        margin: 0;
-        padding: 0;
-    }
-    #editor {
-        text-align: left;
-    }
-</style>
+<div id="editor" bind:this={divEl}></div>
 
-<div class='skeleton' style="width: 100%; heigth: 100%;">
-    <div id="editor" bind:this={divEl}></div>
-</div>

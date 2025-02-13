@@ -127,11 +127,12 @@ def updateList(arr, i, j, timedExecution = False, end = False) :
     arr: The list to be displayed (list)
     i : The index of the first element (int)
     j : The index of the second element (int)
+    timedExecution : Boolean to indicate if the execution is timed (bool) (default = False)
     end : Boolean to indicate the end of the sorting process (bool) (default = False)
     '''
     if not timedExecution:
         window.updateList(arr)
-        if window.swap :
+        if window.swap and not end:
             window.swapOnDiagram(i, j)
         if end : 
             window.stopComparing()
