@@ -153,7 +153,7 @@ def compare(arr : list, i : int, j : int) -> bool:
 
     if window.compare and not timedExecution:
         sync.compareOnDiagram(i, j)
-        sleep(0.05)
+        sleep(0.02 * (window.getCustomAnimation()))
         
     updateCompareCount()
     
@@ -183,7 +183,7 @@ def swap(arr : list, i : int, j : int):
     updateSwapCount()   
     
     if window.swap and not timedExecution:
-        sleep(1)
+        sleep(0.3 * (window.getCustomAnimation()))
         
         
 def defineGlobals(myList) -> dict:
