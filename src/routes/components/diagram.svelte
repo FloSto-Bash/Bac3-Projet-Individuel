@@ -33,7 +33,8 @@
     let averageTime = $state(0);
     let ecartType = $state(0);
 
-    let customAnimation = $state(11);
+    const maxAnimation = 10;
+    let customAnimation = $state(maxAnimation);
 
     const arrayLength = $derived(get(selectedList).length);
 
@@ -188,7 +189,7 @@
                         transition:fly={{ x: xScale(swapIndices[1 - swapIndices.indexOf(i)]) - xScale(i), duration: 300 * customAnimation }}
                         x={xScale(i) + 2 || 0}
                         y={yScale(value) || 0}
-                        width={barWidth -3 || 0}
+                        width={(width < 512 ? barWidth - 2 : barWidth - 4)|| 0}
                         height={Math.abs(yScale(0) - yScale(value)) || 0}
                         fill={comparedIndices.includes(i) ? '#FF9900' : '#B40000'}
                     />
@@ -196,7 +197,7 @@
                     <rect
                         x={xScale(i) + 2 || 0}
                         y={yScale(value) || 0}
-                        width={barWidth - 3|| 0}
+                        width={(width < 512 ? barWidth - 2 : barWidth - 4)|| 0}
                         height={Math.abs(yScale(0) - yScale(value)) || 0}
                         fill={comparedIndices.includes(i) ? '#FF9900' : '#B40000'}
                     />
@@ -232,7 +233,7 @@
 
 <div>
     <label class="flex justify-center m-1" for="customAnimation">Customize the Animation</label>
-    <input id="customAnimation" type="range" min="1" max="11" step="2" bind:value={customAnimation} class="flex justify-center range range-primary w-1/4 mx-auto mb-1"/>
+    <input id="customAnimation" type="range" min="1" max="{maxAnimation}" bind:value={customAnimation} class="flex justify-center range range-primary w-1/4 mx-auto mb-1"/>
         <div class="flex justify-between px-2 text-xs w-1/4 mx-auto">
             <span>slower</span>
             <span></span>
