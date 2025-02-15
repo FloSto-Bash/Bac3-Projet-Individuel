@@ -1,40 +1,25 @@
 export const initialCode = 
 `"""
-To execute your code, use the 'play' button on the right side of the screen, just like if you were running a normal Python code.
-You must use the predefined functions 'swap' and 'compare' in your code, otherwise the animation will not work.
+Explanation
+-----------
 
-The selected list in the animation is called 'myList', and it is the list that you should sort.
-You can not redefine 'myList' in your code.
+To run your code, click the 'play' button on the right side of the screen 
+(just like normal Python code). 
+You must use the predefined 'compare' and 'swap' functions, or the animation 
+will not work.
 
-Here is the description of the predefined functions:
+The list you need to sort is called 'myList', and you cannot redefine it.
 
-def compare(arr : list, i : int, j : int) -> bool:
-    '''
-    Compares two integers, returns True if arr[i] is less than or equal to arr[j], False otherwise
-    
-    Parameters:
-    -----------
-    arr: The list in which the elements are to be compared (list)
-    i: The index of the first integer (int)
-    j: The index of the second integer (int)
-    
-    Return:
-    -------
-    result: True if arr[i] is less than or equal to arr[j], False otherwise (bool)
-    '''
+Predefined Functions
+--------------------
 
-def swap(arr : list, i : int, j : int):
-    '''
-    Swaps the elements at the given indices in the list
-    
-    Parameters:
-    -----------
-    arr: The list in which the elements are to be swapped (list)
-    i: The index of the first element (int)
-    j: The index of the second element (int)
-    '''
+compare(arr, i, j) -> bool
+Returns True if arr[i] <= arr[j], otherwise False.
 
-You can try this code to see the effect of the predefined functions
+swap(arr, i, j)
+Swaps the elements at indices i and j in arr.
+
+Try the example code to see how these functions work.
 """
 # Be sure to activate the check box 'Show compare' to see the output of the code
 compare(myList, 0, 1)

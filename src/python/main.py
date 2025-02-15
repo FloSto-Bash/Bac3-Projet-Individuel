@@ -1,4 +1,4 @@
-from pyscript import document, window, PyWorker
+from pyscript import document, window, PyWorker # type: ignore
 import pyodide # type: ignore
 
 async def startWorker(event):
