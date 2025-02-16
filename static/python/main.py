@@ -75,7 +75,7 @@ async def startWorker(event):
     window.updateInExecution(False)
     
 def createWorker():
-    worker = PyWorker("/src/python/worker.py", type="pyodide")
+    worker = PyWorker("python/worker.py", type="pyodide")
     worker.sync.compareOnDiagram = compareOnDiagram
     worker.sync.updateList = updateList
     return worker
