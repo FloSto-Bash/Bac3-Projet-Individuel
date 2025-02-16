@@ -19,14 +19,7 @@
 		"**/*.css"
 	],
 	"svelte": "./dist/index.js",
-	"types": "./dist/index.d.ts",
 	"type": "module",
-	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"svelte": "./dist/index.js"
-		}
-	},
 	"peerDependencies": {
 		"svelte": "^5.0.0"
 	},
@@ -45,6 +38,7 @@
 	},
 	"dependencies": {
 		"@pyscript/core": "^0.6.19",
+		"@sveltejs/adapter-static": "^3.0.8",
 		"@tailwindcss/typography": "^0.5.16",
 		"d3-scale": "^4.0.2",
 		"daisyui": "^4.12.23",

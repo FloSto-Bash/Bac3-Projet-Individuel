@@ -225,7 +225,8 @@
     
       <button class="btn btn-ghost">
       <a href="https://unamur.be" target="_blank" aria-label="UNamur website" class="flex items-center">
-        <img src="./src/logo/UNamur-vertical.svg" alt="UNamur logo" class="w-40"/>
+        <!-- <img src="/static/logo/UNamur-vertical.svg" alt="UNamur logo" class="w-40"/> -->
+        <h2>UNamur site</h2>
       </a>
       </button>
   </nav>
