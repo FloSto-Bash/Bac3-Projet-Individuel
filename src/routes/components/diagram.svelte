@@ -233,16 +233,15 @@
 
 <div>
     <label class="flex justify-center text-xs md:text-md lg:text-lg m-2" for="customAnimation">Customize the Animation</label>
-    <input id="customAnimation" type="range" min="1" max="{maxAnimation}" bind:value={customAnimation} class="flex justify-center range range-primary w-1/2 md:w-1/2 lg:w-1/3 xl:w-1/3 mx-auto mb-1"/>
+    <input id="customAnimation" type="range" min="1" max={maxAnimation} bind:value={customAnimation} class="flex justify-center range range-primary w-1/2 md:w-1/2 lg:w-1/3 xl:w-1/3 mx-auto mb-1"/>
         <div class="flex justify-between px-2 text-xs md:text-md w-1/2 md:w-1/2 lg:w-1/3 xl:w-1/3 mx-auto mb-2">
-            <span>faster</span>
+            <span>shorter</span>
             <span></span>
             <span></span>
             <span></span>
             <span></span>
-            <span>slower</span>
+            <span>longer</span>
         </div>
-
 </div>
 
 <div class="overflow-x-auto">
