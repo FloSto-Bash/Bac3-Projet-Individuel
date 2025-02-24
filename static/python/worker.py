@@ -1,7 +1,8 @@
 from pyscript import window, document, sync
 from time import time, sleep
-# from restricted.RestrictImports import RestrictImports # Temporary : this import is not working, so the class is copied below
-# from restricted.RestrictVariableRedefinition import RestrictVariableRedefinition # Temporary : this import is not working, so the class is copied below
+
+# from restricted.RestrictImports import RestrictImports as RestrictImports # Temporary : this import is not working, so the class is copied below
+# from restricted.RestrictVariableRedefinition import RestrictVariableRedefinition as RestrictVariableRedefinition# Temporary : this import is not working, so the class is copied below
 
 import ast
 
@@ -153,7 +154,7 @@ def compare(arr : list, i : int, j : int) -> bool:
 
     if window.compare and not timedExecution:
         sync.compareOnDiagram(i, j)
-        sleep(0.01 * (window.getCustomAnimation()))
+        sleep(window.getAnimationTime()/10_000)
         
     updateCompareCount()
     
@@ -183,7 +184,7 @@ def swap(arr : list, i : int, j : int):
     updateSwapCount()   
     
     if window.swap and not timedExecution:
-        sleep(1 * (window.getCustomAnimation()/ 10))
+        sleep(window.getAnimationTime()/1000)
         
         
 def defineGlobals(myList) -> dict:

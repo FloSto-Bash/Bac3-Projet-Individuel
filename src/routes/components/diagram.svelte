@@ -33,12 +33,23 @@
     let averageTime = $state(0);
     let ecartType = $state(0);
 
-    const maxAnimation = 25;
-    let customAnimation = $state(maxAnimation/2);
+    const maxAnimation = 50;
+    let animationInput = $state(maxAnimation/2);
+    let animationTime = $derived(computeAnimationTime(animationInput));
 
     const arrayLength = $derived(get(selectedList).length);
 
     const padding = { top: 20, right: 20, bottom: 20, left: 20 };
+
+    /**
+     * Compute the animation time based on the input
+     * Note : The animation time is computed as 50 * (maxAnimation - animationInput), 50 an arbitrary value in milliseconds
+     */
+    function computeAnimationTime() {
+        return 50 * (maxAnimation - animationInput);
+    }
+    
+
 
     /**
      * On mount, reset the grid to the selected list and set the window functions and variables
@@ -72,7 +83,7 @@
         window.getEcartType = () => ecartType;
         window.getExecutionTimeList = () => executionTimeList;
 
-        window.getCustomAnimation = () => customAnimation;
+        window.getAnimationTime = () => animationTime;
     });
 
     function updateExecutionTime (value) {
@@ -144,7 +155,7 @@
     */
     $effect(() => {
         if (swapIndices.length > 0) {
-            setTimeout(() => (swapIndices = []), 1000 * (customAnimation/10));
+            setTimeout(() => (swapIndices = []), animationTime);
         };
         if (swap !== window.swap){
             window.swap = swap;
@@ -186,7 +197,7 @@
                 <!-- Make a transition if the elements need to be swapped -->
                 {#if swapIndices.includes(i)}
                     <rect
-                        transition:fly={{ x: xScale(swapIndices[1 - swapIndices.indexOf(i)]) - xScale(i), duration: 1000 * (customAnimation/10) }}
+                        transition:fly={{ x: xScale(swapIndices[1 - swapIndices.indexOf(i)]) - xScale(i), duration: animationTime}}
                         x={xScale(i) + 2 || 0}
                         y={yScale(value) || 0}
                         width={(width < 512 ? barWidth - 2 : barWidth - 4)|| 0}
@@ -232,15 +243,15 @@
 </div>
 
 <div>
-    <label class="flex justify-center text-xs md:text-md lg:text-lg m-2" for="customAnimation">Customize the Animation</label>
-    <input id="customAnimation" type="range" min="1" max={maxAnimation} bind:value={customAnimation} class="flex justify-center range range-primary w-1/2 md:w-1/2 lg:w-1/3 xl:w-1/3 mx-auto mb-1"/>
+    <label class="flex justify-center text-xs md:text-md lg:text-lg m-2" for="animationInput">Customize the Animation</label>
+    <input id="animationInput" type="range" min="1" max={maxAnimation - 1} bind:value={animationInput} class="flex justify-center range range-primary w-1/2 md:w-1/2 lg:w-1/3 xl:w-1/3 mx-auto mb-1"/>
         <div class="flex justify-between px-2 text-xs md:text-md w-1/2 md:w-1/2 lg:w-1/3 xl:w-1/3 mx-auto mb-2">
-            <span>shorter</span>
+            <span>slow</span>
             <span></span>
             <span></span>
             <span></span>
             <span></span>
-            <span>longer</span>
+            <span>fast</span>
         </div>
 </div>
 
