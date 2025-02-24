@@ -39,7 +39,7 @@
     
     // code from chatGPT
     if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
-      alert('This website is not optimized for Safari. You may experience slower performance and occasional freezes. For the best experience, please use another browser such as Google Chrome, Arc, or Firefox');
+      alert("This website may not work optimally on Safari or any WebKit-based browser (such as Chrome or Firefox on iOS). You may experience slower performance or occasional freezes. For the best experience, use Google Chrome, Arc, or Firefox on a desktop.");
       pyscriptReady = true;
     }
 
