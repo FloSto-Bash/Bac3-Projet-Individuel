@@ -78,6 +78,11 @@ def createWorker():
     worker = PyWorker("python/worker.py", type="pyodide")
     worker.sync.compareOnDiagram = compareOnDiagram
     worker.sync.updateList = updateList
+    worker.sync.getSwap = getSwap
+    worker.sync.getCompare = getCompare
+    worker.sync.getAnimationTime = getAnimationTime
+    worker.sync.updateCompareCount = updateCompareCount
+    worker.sync.updateSwapCount = updateSwapCount
     return worker
 
 def getCode() -> str:
@@ -124,15 +129,25 @@ def updateList(arr, i, j, timedExecution = False, end = False) :
     
     Parameters:
     -----------
-    arr: The list to be displayed (list)
+    arr: The list to be displayed (pyodide.ffi.object)
     i : The index of the first element (int)
     j : The index of the second element (int)
     timedExecution : Boolean to indicate if the execution is timed (bool) (default = False)
     end : Boolean to indicate the end of the sorting process (bool) (default = False)
     '''
+    if not isinstance(arr, pyodide.ffi.JsProxy) :
+        window.console.log(f"Expected pyodide.ffi.JsProxy, got {type(arr)}")
+        arr = pyodide.ffi.to_js(arr)
+    
+    assert isinstance(arr, pyodide.ffi.JsProxy), f"Expected pyodide.ffi.JsProxy, got {type(arr)}"
+    assert isinstance(i, int), f"Expected int, got {type(i)}"
+    assert isinstance(j, int), f"Expected int, got {type(j)}"
+    assert isinstance(timedExecution, bool), f"Expected bool, got {type(timedExecution)}"
+    assert isinstance(end, bool), f"Expected bool, got {type(end)}"
+    
     if not timedExecution:
         window.updateList(arr)
-        if window.swap and not end:
+        if getSwap() and not end:
             window.swapOnDiagram(i, j)
         if end : 
             window.stopComparing()
@@ -147,6 +162,7 @@ def updateAverageTime() -> float:
     '''
     executionCount = window.getExecutionCount()
     executionTimeList = window.getExecutionTimeList()
+    
     return sum(executionTimeList) / executionCount
 
 def computeStandardDeviation(averageTime) -> float:
@@ -164,4 +180,20 @@ def computeStandardDeviation(averageTime) -> float:
     executionTimeList = window.getExecutionTimeList()
     variance = sum((time - averageTime) ** 2 for time in executionTimeList) / len(executionTimeList)
     standardDeviation = variance ** 0.5
+    
     return standardDeviation
+
+def getSwap():
+    return window.getSwap()
+
+def getCompare():
+    return window.getCompare()
+
+def getAnimationTime():
+    return window.getAnimationTime()
+
+def updateCompareCount(compareCount):
+    window.updateCompareCount(compareCount)
+    
+def updateSwapCount(swapCount):
+    window.updateSwapCount(swapCount)

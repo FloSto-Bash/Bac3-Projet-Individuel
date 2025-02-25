@@ -1,10 +1,10 @@
 from pyscript import window, document, sync
 from time import time, sleep
+import pyodide
+# from restricted.RestrictImports import RestrictImports # Temporary : this import is not working, so the class is copied below
+# from restricted.RestrictVariableRedefinition import RestrictVariableRedefinition # Temporary : this import is not working, so the class is copied below
 
-# from restricted.RestrictImports import RestrictImports as RestrictImports # Temporary : this import is not working, so the class is copied below
-# from restricted.RestrictVariableRedefinition import RestrictVariableRedefinition as RestrictVariableRedefinition# Temporary : this import is not working, so the class is copied below
-
-import ast
+import ast, copy
 
 timedExecution = False
 swapCount = 0
@@ -147,14 +147,14 @@ def compare(arr : list, i : int, j : int) -> bool:
     ------
     This function is available to the user's code
     '''
-    
+    assert isinstance(arr, list), f"Expected list, got {type(arr)}"
     assert isinstance(arr[i], int), f"Expected int, got {type(arr[i])}"
     assert isinstance(arr[j], int), f"Expected int, got {type(arr[j])}"
 
 
-    if window.compare and not timedExecution:
+    if sync.getCompare() and not timedExecution:
         sync.compareOnDiagram(i, j)
-        sleep(window.getAnimationTime()/10_000)
+        sleep(sync.getAnimationTime()/10_000)
         
     updateCompareCount()
     
@@ -177,14 +177,17 @@ def swap(arr : list, i : int, j : int):
     assert arr != [], "List is empty"
     assert i < len(arr), "Index out of range"
     assert j < len(arr), "Index out of range"
-    arr[i], arr[j] = arr[j], arr[i]
 
-    sync.updateList(arr, i, j, timedExecution)
-     
-    updateSwapCount()   
+    arr[i], arr[j] = arr[j], arr[i]
     
-    if window.swap and not timedExecution:
-        sleep(window.getAnimationTime()/1000)
+    # convert the list to a JsProxy object before updating the list in the front-end
+    sync.updateList(pyodide.ffi.to_js(arr), i, j, timedExecution)
+    updateSwapCount() 
+    
+    if sync.getSwap() and not timedExecution:
+        sleep(sync.getAnimationTime()/1_000)
+    
+    # if not timedExecution : window.console.log(arr)
         
         
 def defineGlobals(myList) -> dict:
@@ -199,6 +202,10 @@ def defineGlobals(myList) -> dict:
     -------
     exec_globals: The global variables and builtins functions that can be accessed by the user's code (dict)
     '''
+    # Convert JsProxy to a native Python list
+    if isinstance(myList, pyodide.ffi.JsProxy):
+        myList = list(myList)
+    
     assert all(isinstance(i, int) for i in myList), "All elements of the list should be integers"
     assert len(myList) > 0, "List should not be empty"
     
@@ -230,8 +237,9 @@ def defineGlobals(myList) -> dict:
             'sum' : sum,
             'reversed' : reversed,
             'round' : round,
+            'window' : window
         },
-        'myList':  myList[:],
+        'myList':  copy.deepcopy(myList),
         'compare' : compare,
         'swap' : swap
     }
@@ -287,9 +295,9 @@ def execute_code(code, myList, measuringTime = False):
         end_time = time()
         final_time = end_time - start_time
     
-    myList = exec_globals.get('myList', None)
+    myList = exec_globals.get('myList')
     
-    if myList is None :
+    if myList is None:
         outputDiv.innerHTML = "Something went wrong... please try again"
         raise Exception("List is None")
     else :
@@ -297,11 +305,11 @@ def execute_code(code, myList, measuringTime = False):
             outputDiv.innerHTML = "Code executed successfully"
     
     if measuringTime :
-        window.updateCompareCount(compareCount)
-        window.updateSwapCount(swapCount)
+        sync.updateCompareCount(compareCount)
+        sync.updateSwapCount(swapCount)
         return final_time
     
-    return myList
+    return pyodide.ffi.to_js(myList)
 
 def updateSwapCount(reset = False) -> None:
     '''

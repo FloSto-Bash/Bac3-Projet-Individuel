@@ -63,8 +63,8 @@
 
         window.swapOnDiagram = swapOnDiagram;
 
-        window.compare = compare;
-        window.swap = swap;
+        window.getCompare = () => compare;
+        window.getSwap = () => swap;
 
         window.resetGrid = resetGrid;
 
@@ -157,12 +157,6 @@
         if (swapIndices.length > 0) {
             setTimeout(() => (swapIndices = []), animationTime);
         };
-        if (swap !== window.swap){
-            window.swap = swap;
-        };
-        if (compare !== window.compare){
-            window.compare = compare;
-        };
     });
 </script>
 
@@ -173,7 +167,7 @@
 </svelte:head>
 
 <div class="form-control flex flex-col items-center">
-    <select bind:value={selectedListName} onchange={resetGrid} class="select select-primary select-xs sm:select-sm w-full max-w-xs mb-4" style="text-align-last:center;">
+    <select bind:value={selectedListName} onchange={resetGrid} class="select select-primary select-xs sm:select-sm w-full max-w-xs mb-4" style="text-align-last:center;" disabled={inExecution}>
         {#each unsortedLists as list}
             <option value={list.name}>{list.name}</option>
         {/each}
