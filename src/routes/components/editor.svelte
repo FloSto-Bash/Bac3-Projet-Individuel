@@ -1,9 +1,8 @@
 <script>
     import { onMount } from "svelte";
     import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
-    import { selectedList } from "../../lib/selectedList.js";
-
-    import { initialCode } from "../../lib/initialCode.js";
+    import { selectedList } from "$lib/selectedList.js";
+    import { initialCode } from "$lib/initialCode.js";
 
     let myList;
     let subscriptions = [];
@@ -12,7 +11,7 @@
     let editor;
     let Monaco;
 
-    let { code, editorMode } = $props();
+    let { code, editorMode, actualCode } = $props();
 
     /**
      * Subscribe to the selected list
@@ -62,9 +61,7 @@
      * Initialise the editor
      */
     onMount(async () => {
-
         /**
-    <div id="editor" bind:this={divEl}></div>
          * Set up the Monaco environment
          * @author github Copilot
          */
@@ -82,7 +79,7 @@
 
         // Creates the Monaco editor
         editor = Monaco.editor.create(divEl, {
-            value: initialCode,
+            value: localStorage.getItem(actualCode) === null ? initialCode : localStorage.getItem(actualCode),
             language: "python",
             theme: editorMode ? "vs-dark" : "vs-light",
             readOnly: false,
@@ -117,10 +114,7 @@
 
         window.editor = editor;
         window.myList = myList;
-        window.updateEditorWindow = () => {
-            window.code = editor.getValue();
-        };
-
+        window.updateEditorWindow = () =>  {window.code = editor.getValue()};
         window.updateList = updateList;
 
         updateEditorDimensions();
@@ -150,7 +144,9 @@
      */
     $effect (() => {
         if (code !== undefined && editor !== undefined) {
+            const position = editor.getPosition();
             editor.setValue(code);
+            editor.setPosition(position);
         }
     });
 
@@ -165,4 +161,3 @@
 </script>
 
 <div id="editor" bind:this={divEl}></div>
-

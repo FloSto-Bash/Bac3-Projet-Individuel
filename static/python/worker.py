@@ -1,6 +1,6 @@
-from pyscript import window, document, sync
+from pyscript import document, sync # type: ignore
 from time import time, sleep
-import pyodide
+import pyodide # type: ignore
 # from restricted.RestrictImports import RestrictImports # Temporary : this import is not working, so the class is copied below
 # from restricted.RestrictVariableRedefinition import RestrictVariableRedefinition # Temporary : this import is not working, so the class is copied below
 
@@ -186,8 +186,6 @@ def swap(arr : list, i : int, j : int):
     
     if sync.getSwap() and not timedExecution:
         sleep(sync.getAnimationTime()/1_000)
-    
-    # if not timedExecution : window.console.log(arr)
         
         
 def defineGlobals(myList) -> dict:
@@ -236,8 +234,7 @@ def defineGlobals(myList) -> dict:
             'abs' : abs,
             'sum' : sum,
             'reversed' : reversed,
-            'round' : round,
-            'window' : window
+            'round' : round
         },
         'myList':  copy.deepcopy(myList),
         'compare' : compare,

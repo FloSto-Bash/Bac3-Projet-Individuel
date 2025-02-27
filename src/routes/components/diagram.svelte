@@ -4,10 +4,14 @@
     import { fly } from 'svelte/transition';
 
     import { selectedList } from '../../lib/selectedList.js';
-    import { get } from 'svelte/store';
+    import { get, writable } from 'svelte/store';
 
     // Get the unsorted lists from the parent component
-    let { unsortedLists, isDarkMode, pyscriptReady } = $props();
+    let { unsortedLists, isDarkMode, pyscriptReady, actualCode, extractInteger } = $props();
+
+    // init variables for localStorage
+    let keys = writable([]);
+    let actualStats = $derived('Stats-' + String(extractInteger(actualCode)));
 
     // Define the state variables
     let comparedIndices = $state([]);
@@ -25,13 +29,14 @@
 
     let inExecution = $state(false);
 
-    // Define the stats
+    // Define the stats variables
     let executionTime = $state(0);
     let executionTimeList = $state([]);
     let swapCount = $state(0);
     let compareCount = $state(0);
     let averageTime = $state(0);
     let ecartType = $state(0);
+    let allStats = $derived([executionCount, executionTime.toFixed(3), swapCount, compareCount, averageTime.toFixed(3), ecartType.toFixed(3)]);
 
     const maxAnimation = 50;
     let animationInput = $state(maxAnimation/2);
@@ -48,8 +53,18 @@
     function computeAnimationTime() {
         return 50 * (maxAnimation - animationInput);
     }
-    
 
+    function syncStatsWithLocalStorage() {
+        if (localStorage.getItem(actualStats) !== null ) return;
+
+        resetStats();
+        const interval = setInterval( async () => {
+            localStorage.setItem(actualStats, allStats);
+            keys.set(Object.keys(localStorage));
+        }, 2000);
+
+        return () => clearInterval(interval);
+    };
 
     /**
      * On mount, reset the grid to the selected list and set the window functions and variables
@@ -84,11 +99,56 @@
         window.getExecutionTimeList = () => executionTimeList;
 
         window.getAnimationTime = () => animationTime;
+        window.addStats = () => syncStatsWithLocalStorage();;
+        window.deleteStats = (key) => deleteLocalStorageStats(key);
+        window.selectLocalStorageStats = () => selectStats();
+
+        if (localStorage.getItem(actualStats) === null) {
+            keys.set(Object.keys(localStorage));
+            syncStatsWithLocalStorage();
+        } else {
+            selectStats();
+        }
     });
+
+    $effect(() => {
+        localStorage.setItem(actualStats, allStats);
+        keys.set(Object.keys(localStorage));
+    })
+
+    function deleteLocalStorageStats(key) {
+        key = "Stats-" + String(extractInteger(key));
+        localStorage.removeItem(key);
+        keys.set(Object.keys(localStorage));
+    }
 
     function updateExecutionTime (value) {
         executionTime = value;
         executionTimeList.push(executionTime);
+    }
+
+    function selectStats() {
+        // executionCount, executionTime, swapCount, compareCount, averageTime, ecartType = localStorage.getItem(actualStats);
+        let stats = localStorage.getItem(actualStats);
+        
+        // Code from GitHub Copilot
+        if (stats) {
+        stats = stats.split(',').map((stat, index) => {
+            if (index === 0 || index === 2 || index === 3) {
+                return parseInt(stat, 10);
+            } else {
+                return parseFloat(stat);
+            }
+        });
+
+        // Assigner les valeurs aux variables correspondantes
+        executionCount = stats[0];
+        executionTime = stats[1];
+        swapCount = stats[2];
+        compareCount = stats[3];
+        averageTime = stats[4];
+        ecartType = stats[5];
+    }
     }
 
     const xScale = $derived(scaleLinear().domain([0, arrayLength]).range([padding.left, width - padding.right]));
@@ -137,7 +197,7 @@
         if (swap) {swapIndices = [a, b];}
     }
 
-    async function resetStats() {
+    function resetStats() {
         executionTimeList = [];
 
         executionTime = 0;
@@ -146,7 +206,6 @@
         averageTime = 0;
         ecartType = 0;
         executionCount = 0;
-        
     }
 
     /**
@@ -253,22 +312,22 @@
     <table class="table table-xs sm:table-sm md:table-md lg:table-lg xl:table-xl">
         <thead class="bg-base-200">
             <tr>
-                <th>Execution Count</th>
-                <th>Execution Time</th>
-                <th>Swap Count</th>
-                <th>Compare Count</th>
-                <th>Average Time</th>
-                <th>Standard Deviation</th>
+            <th>Execution Count</th>
+            <th>Execution Time</th>
+            <th>Swap Count</th>
+            <th>Compare Count</th>
+            <th>Average Time</th>
+            <th>Standard Deviation</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td>{executionCount}</td>
-                <td>{executionTime.toFixed(3)}</td>
-                <td>{swapCount}</td>
-                <td>{compareCount}</td>
-                <td>{averageTime.toFixed(3)}</td>
-                <td>{ecartType.toFixed(3)}</td>
+            <td>{allStats[0]}</td>
+            <td>{allStats[1]}</td>
+            <td>{allStats[2]}</td>
+            <td>{allStats[3]}</td>
+            <td>{allStats[4]}</td>
+            <td>{allStats[5]}</td>
             </tr>
         </tbody>
     </table>

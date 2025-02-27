@@ -136,7 +136,6 @@ def updateList(arr, i, j, timedExecution = False, end = False) :
     end : Boolean to indicate the end of the sorting process (bool) (default = False)
     '''
     if not isinstance(arr, pyodide.ffi.JsProxy) :
-        window.console.log(f"Expected pyodide.ffi.JsProxy, got {type(arr)}")
         arr = pyodide.ffi.to_js(arr)
     
     assert isinstance(arr, pyodide.ffi.JsProxy), f"Expected pyodide.ffi.JsProxy, got {type(arr)}"
