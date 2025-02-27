@@ -217,14 +217,14 @@
                 </div>
               {/if}
             {/each}
-            <div class="grid grid-cols-2 items-center hover:bg-base-200 rounded p-1">
+            <div class="grid grid-cols-2 items-center rounded p-1">
               <button class="btn btn-ghost p-3" aria-label="Add a new code" onclick={() => addLocalStorage()}>
                 <svg fill={isDarkMode ? "white" : 'black'} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="15" height="15">
                   <path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"/>
                 </svg>
               </button>
-              <button class="btn btn-ghost p-3" aria-label="delete all code stored in the localStorage" onclick={() => { localStorage.clear(); location.reload(); }}>
-                <svg fill={isDarkMode ? "white" : 'black'} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="15" height="15">
+              <button class="btn btn-ghost bg-red-500 hover:bg-red-700 p-3" aria-label="delete all code stored in the localStorage" onclick={() => { localStorage.clear(); location.reload(); }}>
+                <svg fill="white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="15" height="15">
                   <path d="M463.5 224l8.5 0c13.3 0 24-10.7 24-24l0-128c0-9.7-5.8-18.5-14.8-22.2s-19.3-1.7-26.2 5.2L413.4 96.6c-87.6-86.5-228.7-86.2-315.8 1c-87.5 87.5-87.5 229.3 0 316.8s229.3 87.5 316.8 0c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0c-62.5 62.5-163.8 62.5-226.3 0s-62.5-163.8 0-226.3c62.2-62.2 162.7-62.5 225.3-1L327 183c-6.9 6.9-8.9 17.2-5.2 26.2s12.5 14.8 22.2 14.8l119.5 0z"/>
                 </svg>
               </button>
