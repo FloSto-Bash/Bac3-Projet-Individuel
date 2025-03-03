@@ -212,33 +212,26 @@ def defineGlobals(myList) -> dict:
     
     exec_globals = {
         '__builtins__': {
-            '__import__' : __import__,
-            'print': print,
+            '__import__': __import__,
             'range': range,
             'len': len,
             'int': int,
             'float': float,
             'str': str,
             'list': list,
-            'dict': dict,
-            'set': set,
-            'tuple': tuple,
             'bool': bool,
-            'type': type,
-            'Exception': Exception,
             'min': min,
             'max': max,
-            'enumerate': enumerate,
-            'all' : all,
-            'any' : any,
-            'abs' : abs,
-            'sum' : sum,
-            'reversed' : reversed,
-            'round' : round
+            'all': all,
+            'any': any,
+            'abs': abs,
+            'sum': sum,
+            'round': round,
+            'reversed': reversed
         },
-        'myList':  copy.deepcopy(myList),
-        'compare' : compare,
-        'swap' : swap
+        'myList': copy.deepcopy(myList),
+        'compare': compare,
+        'swap': swap
     }
     
     return exec_globals
