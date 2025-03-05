@@ -1,6 +1,17 @@
 from pyscript import document, window, PyWorker # type: ignore
 import pyodide # type: ignore
 
+def on_worker_message(event):
+    data = event.data
+    outputDiv = document.getElementById('output')
+    if isinstance(data, str) : 
+        window.console.log("❌ Error in worker : " + event.data)
+        keywords = ["SyntaxError", "JSON"]
+        if all(keyword in event.data for keyword in keywords):
+            outputDiv.innerHTML = "Something went wrong... please try again"
+        else:
+            outputDiv.innerHTML = f"{event.data}"
+
 async def startWorker(event):
     '''
     Creates a new worker to execute the user's code and returns the result
@@ -15,62 +26,62 @@ async def startWorker(event):
     '''
     window.updateInExecution(True)
     
-    try : 
-        window.incrementExecutionCount()
-                
-        console = window.console
-        
-        outputDiv = document.getElementById('output')
-        outputDiv.innerHTML = "Creating a safe place to execute your code :)"
+    window.incrementExecutionCount()
             
-        #  Worker pour l'exécution normale
-        myWorker = createWorker()
-        await myWorker.ready
-        assert myWorker.ready is not None, "Worker did not start properly"
+    console = window.console
+    console.log("🔥 Execution Count : ", window.getExecutionCount())
+    
+    outputDiv = document.getElementById('output')
+    outputDiv.innerHTML = "Creating a safe place to execute your code :)"
         
-        # Worker pour l'exécution chronométrée
-        timedWorker = createWorker()
-        await timedWorker.ready
-        assert timedWorker.ready is not None, "Timed Worker did not start properly"
-        
-        arr = getArr()
-        code = getCode()
+    #  Worker pour l'exécution normale
+    myWorker = createWorker()
+    await myWorker.ready
+    assert myWorker.ready is not None, "Worker did not start properly"
+    
+    # Worker pour l'exécution chronométrée
+    timedWorker = createWorker()
+    await timedWorker.ready
+    assert timedWorker.ready is not None, "Timed Worker did not start properly"
+            
+    myWorker.onmessage = on_worker_message
+    timedWorker.onmessage = on_worker_message
+    
+    arr = getArr()
+    code = getCode()
 
-        console.log("Worker starting execution")
-        sorted_list = myWorker.sync.execute_code(code, arr, False)
-        
-        console.log("Timed Worker starting execution")
-        time = timedWorker.sync.execute_code(code, arr, True)
-        
-        time = await time
-        if time is not None :
-            window.updateExecutionTime(time)
-            
-            averageTime = updateAverageTime()
-            window.updateAverageTime(averageTime)
-            window.updateStandardDeviation(computeStandardDeviation(averageTime))
-        
-        myList = await sorted_list
-        
-        if myList is None : 
-            window.decrementExecutionCount()
-            outputDiv.innerHTML = "Something went wrong... please try again"
-            console.log("List is None, resetting grid")
-            window.resetGrid()
-            
-        else :
-            updateList(myList, len(arr) - 1, len(arr), end = True)
-        
-        timedWorker.terminate()
-        assert timedWorker.terminate, "Timed Worker did not terminate properly"
-        
-        myWorker.terminate()
-        assert myWorker.terminate, "Worker did not terminate properly"
-        
-    except Exception as e:
-        window.decrementExecutionCount()
-        outputDiv.innerHTML = f"Error: {str(e)}<br>"
-        console.log(f"Error in workers : {str(e)}")
+    console.log("💨 Worker starting execution")
+    sorted_list = myWorker.sync.execute_code(code, arr, False)
+    
+    console.log("💨 Timed Worker starting execution")
+    time = timedWorker.sync.execute_code(code, arr, True)
+    
+    time = await time
+    
+    if time is None :
+        endingWithError()
+        terminateWorker(timedWorker, myWorker)
+        return
+    console.log("✅ Received result from timed Worker !")
+    
+    window.updateExecutionTime(time)
+    
+    averageTime = updateAverageTime()
+    window.updateAverageTime(averageTime)
+    window.updateStandardDeviation(computeStandardDeviation(averageTime))
+    
+    myList = await sorted_list
+    
+    if myList is None : 
+        endingWithError()
+        outputDiv.innerHTML = "Something went wrong... please try again"
+        terminateWorker(timedWorker, myWorker)
+        return
+    console.log("✅ Received results from Worker !")
+
+    updateList(myList, len(arr) - 1, len(arr), end = True)
+    
+    terminateWorker(timedWorker, myWorker)
         
     window.updateInExecution(False)
     
@@ -84,6 +95,20 @@ def createWorker():
     worker.sync.updateCompareCount = updateCompareCount
     worker.sync.updateSwapCount = updateSwapCount
     return worker
+
+def terminateWorker(worker1, worker2):
+    worker1.terminate()
+    assert worker1.terminate, "Worker1 did not terminate properly"
+    
+    worker2.terminate()
+    assert worker2.terminate, "Worker2 did not terminate properly"
+    
+def endingWithError():
+    window.decrementExecutionCount()
+    window.updateInExecution(False)
+    
+    window.stopComparing()
+    window.resetGrid()
 
 def getCode() -> str:
     '''

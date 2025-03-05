@@ -1,5 +1,6 @@
 from pyscript import document, sync # type: ignore
 from time import time, sleep
+from js import postMessage # type: ignore
 import pyodide # type: ignore
 # from restricted.RestrictImports import RestrictImports # Temporary : this import is not working, so the class is copied below
 # from restricted.RestrictVariableRedefinition import RestrictVariableRedefinition # Temporary : this import is not working, so the class is copied below
@@ -269,7 +270,12 @@ def execute_code(code, myList, measuringTime = False):
 
 
     # The 'ast' module is used to parse the code and restrict the imports and variable redefinitions
-    parsed_code = parse_and_restrict(code)
+    try :
+        parsed_code = parse_and_restrict(code)
+    except Exception as e:
+        postMessage(f"{str(e)}")
+        return
+    
     
     if measuringTime :
         global timedExecution
@@ -278,28 +284,29 @@ def execute_code(code, myList, measuringTime = False):
     
     compiled_code = compile(parsed_code, filename='', mode='exec')
     
-    exec(compiled_code, exec_globals)
+    try :
+        exec(compiled_code, exec_globals)
+    except Exception as e:
+        postMessage(f"{str(e)}")
+        return
     
     if measuringTime :
         timedExecution = False
         end_time = time()
         final_time = end_time - start_time
-    
-    myList = exec_globals.get('myList')
-    
-    if myList is None:
-        outputDiv.innerHTML = "Something went wrong... please try again"
-        raise Exception("List is None")
-    else :
-        if not measuringTime :
-            outputDiv.innerHTML = "Code executed successfully"
-    
-    if measuringTime :
+        
         sync.updateCompareCount(compareCount)
         sync.updateSwapCount(swapCount)
         return final_time
     
-    return pyodide.ffi.to_js(myList)
+    myList = exec_globals.get('myList')
+        
+    if myList is None:
+        postMessage("List not found")
+        return
+
+    outputDiv.innerHTML = "Code executed successfully"
+    return myList
 
 def updateSwapCount(reset = False) -> None:
     '''

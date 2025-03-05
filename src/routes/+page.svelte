@@ -55,7 +55,10 @@
    * Sync the code with the localStorage
    */
   function syncCodeWithLocalStorage() {
-    if (localStorage.getItem(actualCode) !== null) return;
+    if (localStorage.getItem(actualCode) !== null) {
+      code = localStorage.getItem(actualCode);
+      window.selectLocalStorageStats();
+    };
 
     const interval = setInterval(() => {
       code = updateCodeFromComponent();
@@ -156,9 +159,10 @@
   }
 
   function selectLocalStorage(key) {
-    // update the actual code variable
+    // update the counter variable
     counter = extractInteger(key);
 
+    // update the actual code variable
     code = localStorage.getItem(actualCode);
     window.selectLocalStorageStats();
   }
