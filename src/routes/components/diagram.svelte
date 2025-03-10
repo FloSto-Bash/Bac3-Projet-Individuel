@@ -220,7 +220,7 @@
 </script>
 
 <svelte:head>
-    <script type="module" src="https://pyscript.net/releases/2025.2.4/core.js"></script>
+    <script type="module" src="https://pyscript.net/releases/2025.2.3/core.js"></script>
     <script type="py" src="python/main.py" config="python/config/pyscript.json"></script>
 </svelte:head>
 
