@@ -2,8 +2,7 @@ export const initialCode =
 `"""
 Explanation
 -----------
-To run your code, click the 'Play' button on the right side of the screen 
-(just like normal Python code). 
+To run your code, click the 'Play' button on the right side of the screen. 
 
 You must use the predefined 'compare' and 'swap' functions, or the animation 
 will not work.
@@ -12,7 +11,8 @@ The list you need to sort is called 'myList', and you cannot redefine it.
 
 You can only use specific built-in functions in your algorithm.  
 If you think a built-in function is missing, please report it using the  
-'Report an issue' button.
+'Report an issue' button. 
+This button is also there to report any bugs you find.
 
 Allowed built-in functions
 --------------------------

@@ -1,10 +1,8 @@
 import unittest
 from unittest.mock import MagicMock
 
-from main import getArr, getCode, compare, updateList
+from ..src.main import getArr, getCode, compare, updateList
 
-# This test code does not work for the moment. The problem is that the document, window and PyWorker objects are not defined in the test environment.
-# Will try to find a solution to this problem after the exams.
 # Mock solution provided by GitHub Copilot
 
 class TestMain(unittest.TestCase):

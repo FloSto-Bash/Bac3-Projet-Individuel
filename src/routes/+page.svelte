@@ -53,6 +53,8 @@
 
   /**
    * Sync the code with the localStorage
+   * @returns {Function} - The interval function
+   * @note - The interval function is used to sync the code with the localStorage, every 2 seconds
    */
   function syncCodeWithLocalStorage() {
     if (localStorage.getItem(actualCode) !== null) {
@@ -82,6 +84,7 @@
       alert(
         "This website may not work optimally on Safari or any WebKit-based browser (such as Chrome or Firefox on iOS). You may experience slower performance or occasional freezes. For the best experience, use Google Chrome, Arc, or Firefox on a desktop.",
       );
+      // Set the pyscriptReady to true, to enable the execution of the Python script on WebKit-based browsers
       pyscriptReady = true;
     }
 
@@ -98,6 +101,10 @@
     const mode = window.matchMedia("(prefers-color-scheme: dark)");
     isDarkMode = mode.matches;
     editorMode = isDarkMode;
+    /**
+     * Listen to the change event of the dark mode
+     * @param {Event} e - The change event
+    */
     mode.addEventListener("change", (e) => {
       isDarkMode = e.matches;
       editorMode = isDarkMode;
@@ -129,6 +136,10 @@
     }
   }
 
+  /**
+   * Update the code from the component
+   * @returns {String} - The updated code
+   */
   function updateCodeFromComponent() {
     if (window === undefined) {
       return code;
@@ -139,12 +150,20 @@
     }
   }
 
+  /**
+   * Delete the localStorage
+   * @param {string} key - The key to delete
+   */
   function deleteLocalStorage(key) {
     localStorage.removeItem(key);
     window.deleteStats(key);
     keys.set(Object.keys(localStorage));
   }
 
+  /**
+   * Add the localStorage
+   * @note - The localStorage is added with the initial code
+   */
   function addLocalStorage(){
     while (localStorage.getItem(actualCode) !== null) {
       counter++;
@@ -154,10 +173,19 @@
     window.addStats();
   }
 
+  /**
+   * Extract the integer from a string
+   * @param {string} str - The string to extract the integer from
+   * @returns {Number} - The extracted integer
+   */
   function extractInteger(str){
     return str.match(/\d+/g).map(Number)[0];
   }
 
+  /**
+   * Select the localStorage
+   * @param {string} key - The key to select
+   */
   function selectLocalStorage(key) {
     // update the counter variable
     counter = extractInteger(key);
@@ -167,6 +195,10 @@
     window.selectLocalStorageStats();
   }
 
+  /**
+   * Download the code
+   * @note - The code is downloaded as a .py file, named "show-my-sort.py"
+   */
   function downloadCode() {
     code = updateCodeFromComponent();
 
@@ -354,6 +386,7 @@
     </div>
   </div>
 </main>
+
 
 <footer class="footer footer-center bg-base-200 text-base-content rounded p-10">
   <nav class="grid grid-flow-col gap-4 justify-between w-full">

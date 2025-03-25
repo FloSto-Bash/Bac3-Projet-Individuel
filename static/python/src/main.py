@@ -1,17 +1,6 @@
 from pyscript import document, window, PyWorker # type: ignore
 import pyodide # type: ignore
 
-def on_worker_message(event):
-    data = event.data
-    outputDiv = document.getElementById('output')
-    if isinstance(data, str) : 
-        window.console.log("❌ Error in worker : " + event.data)
-        keywords = ["SyntaxError", "JSON"]
-        if all(keyword in event.data for keyword in keywords):
-            outputDiv.innerHTML = "Something went wrong... please try again"
-        else:
-            outputDiv.innerHTML = f"{event.data}"
-
 async def startWorker(event):
     '''
     Creates a new worker to execute the user's code and returns the result
@@ -32,6 +21,8 @@ async def startWorker(event):
     console.log("🔥 Execution Count : ", window.getExecutionCount())
     
     outputDiv = document.getElementById('output')
+    assert outputDiv is not None, "Output div not found"
+    
     outputDiv.innerHTML = "Creating a safe place to execute your code :)"
         
     #  Worker pour l'exécution normale
@@ -59,7 +50,7 @@ async def startWorker(event):
     time = await time
     
     if time is None :
-        endingWithError()
+        HandleError()
         terminateWorker(timedWorker, myWorker)
         return
     console.log("✅ Received result from timed Worker !")
@@ -73,7 +64,7 @@ async def startWorker(event):
     myList = await sorted_list
     
     if myList is None : 
-        endingWithError()
+        HandleError()
         outputDiv.innerHTML = "Something went wrong... please try again"
         terminateWorker(timedWorker, myWorker)
         return
@@ -86,7 +77,14 @@ async def startWorker(event):
     window.updateInExecution(False)
     
 def createWorker():
-    worker = PyWorker("python/worker.py", type="pyodide")
+    '''
+    Creates a new worker to execute the user's code
+    
+    Return:
+    -------
+    worker: The worker created to execute the user's code (PyWorker)
+    '''
+    worker = PyWorker("python/src/worker.py", type="pyodide")
     worker.sync.compareOnDiagram = compareOnDiagram
     worker.sync.updateList = updateList
     worker.sync.getSwap = getSwap
@@ -96,19 +94,63 @@ def createWorker():
     worker.sync.updateSwapCount = updateSwapCount
     return worker
 
+def on_worker_message(event):
+    '''
+    Handles the messages sent by the worker
+    
+    Parameters:
+    -----------
+    event: Event
+    
+    Note:
+    ------
+    This function is called when the worker sends a message. The worker only sends messages when an error occurs.
+    When a message is received, the function displays the error message in the output div and log the error in the console.
+    
+    event.data : The error message sent by the worker (str)
+    '''
+    data = event.data
+    outputDiv = document.getElementById('output')
+    assert isinstance(data, str), f"Expected str, got {type(data)}"
+    
+    window.console.log("❌ Error in worker : " + event.data)
+
+    # If the error message contains "SyntaxError" and "JSON", it means the error is related to JSON parsing.  
+    # This issue arises from multiple conversions between Python and JavaScript objects.  
+    # It cannot be fully corrected, only minimized (~2%).  
+
+    if all(keyword in event.data for keyword in ["SyntaxError", "JSON"]):
+        # Therefore, the user is advised to try again.  
+        outputDiv.innerHTML = "Something went wrong... please try again"
+    else:
+        outputDiv.innerHTML = f"{event.data}"
+
 def terminateWorker(worker1, worker2):
+    '''
+    Terminates the workers
+    
+    Parameters:
+    -----------
+    worker1: The worker to be terminated (PyWorker)
+    worker2: The worker to be terminated (PyWorker)
+    '''
     worker1.terminate()
     assert worker1.terminate, "Worker1 did not terminate properly"
     
     worker2.terminate()
     assert worker2.terminate, "Worker2 did not terminate properly"
     
-def endingWithError():
+def HandleError():
+    '''
+    Handles the case when an error occurs during the execution of the user's code
+    '''
     window.decrementExecutionCount()
     window.updateInExecution(False)
     
     window.stopComparing()
     window.resetGrid()
+
+# Get functions to extract the values from the window object
 
 def getCode() -> str:
     '''
@@ -137,6 +179,38 @@ def getArr() -> pyodide.ffi.JsProxy:
     
     return arr
 
+def getSwap():
+    '''
+    Gets the value of the swap variable
+    
+    Return:
+    -------
+    swap: The value of the swap variable (bool)
+    '''
+    return window.getSwap()
+
+def getCompare():
+    '''
+    Gets the value of the compare variable
+    
+    Return:
+    -------
+    compare: The value of the compare variable (bool)
+    '''
+    return window.getCompare()
+
+def getAnimationTime():
+    '''
+    Gets the value of the animationTime variable
+    
+    Return:
+    -------
+    animationTime: The value of the animationTime variable (int)
+    '''
+    return window.getAnimationTime()
+
+# Functions that update the animation of the diagram
+
 def compareOnDiagram(i : int, j : int):
     '''
     Compares two elements on the diagram
@@ -154,15 +228,12 @@ def updateList(arr, i, j, timedExecution = False, end = False) :
     
     Parameters:
     -----------
-    arr: The list to be displayed (pyodide.ffi.object)
+    arr: The list to be displayed (pyodide.ffi.JsProxy)
     i : The index of the first element (int)
     j : The index of the second element (int)
     timedExecution : Boolean to indicate if the execution is timed (bool) (default = False)
     end : Boolean to indicate the end of the sorting process (bool) (default = False)
     '''
-    if not isinstance(arr, pyodide.ffi.JsProxy) :
-        arr = pyodide.ffi.to_js(arr)
-    
     assert isinstance(arr, pyodide.ffi.JsProxy), f"Expected pyodide.ffi.JsProxy, got {type(arr)}"
     assert isinstance(i, int), f"Expected int, got {type(i)}"
     assert isinstance(j, int), f"Expected int, got {type(j)}"
@@ -175,7 +246,9 @@ def updateList(arr, i, j, timedExecution = False, end = False) :
             window.swapOnDiagram(i, j)
         if end : 
             window.stopComparing()
-        
+
+# Compute the average time and standard deviation
+   
 def updateAverageTime() -> float:
     '''
     Updates the average time taken for execution
@@ -207,17 +280,16 @@ def computeStandardDeviation(averageTime) -> float:
     
     return standardDeviation
 
-def getSwap():
-    return window.getSwap()
-
-def getCompare():
-    return window.getCompare()
-
-def getAnimationTime():
-    return window.getAnimationTime()
+# Update the values of the compareCount and swapCount variables in the window object
 
 def updateCompareCount(compareCount):
+    '''
+    Update the value of the compareCount variable
+    '''
     window.updateCompareCount(compareCount)
     
 def updateSwapCount(swapCount):
+    '''
+    Update the value of the swapCount variable
+    '''
     window.updateSwapCount(swapCount)

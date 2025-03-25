@@ -1,8 +1,5 @@
 import unittest
-from worker import execute_code, defineGlobals, swap, compare
-
-# This test code does not work for the moment. The problem is that the document, window and sync objects are not defined in the test environment.
-# Will try to find a solution to this problem after the exams.
+from ..src.worker import execute_code, defineGlobals, swap, compare
 
 class TestWorker(unittest.TestCase):
     

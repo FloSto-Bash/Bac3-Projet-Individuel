@@ -1,9 +1,11 @@
 <script>
-    import { onMount } from "svelte";
     import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
+
+    import { onMount } from "svelte";
     import { selectedList } from "$lib/selectedList.js";
     import { initialCode } from "$lib/initialCode.js";
 
+    // Declare variables
     let myList;
     let subscriptions = [];
     let content;
@@ -11,10 +13,12 @@
     let editor;
     let Monaco;
 
+    // Receive props from the parent component
     let { code, editorMode, actualCode } = $props();
 
     /**
      * Subscribe to the selected list
+     * @param {Array} value - The new list
      */
     const unsubscribe = selectedList.subscribe(value => {
         myList = value;
@@ -24,7 +28,7 @@
     });
 
     /**
-     * Update the dimensions of the editor
+     * Update the dimensions of the editor based on the window size
      */
     function updateEditorDimensions() {
         let width;
@@ -39,10 +43,12 @@
             height = window.innerHeight * 0.48;
         }
 
+        // Fix the height of the editor, if smaller than 478
         if (height < 478 * 0.98) {
             height = 478 * 0.98;
         }
         
+        // Check the width and height
         console.assert(width !== undefined || height !== undefined, 'width or height is undefined');
         console.assert(typeof width === 'number' || typeof height === 'number', 'width or height is not a number');
 
@@ -52,6 +58,7 @@
         if (editor) {
             editor.layout();
             editor.updateOptions({
+                // Update the font size based on the window size
                 fontSize: window.innerWidth > 1024 ? 14 : 12
             });
         }
@@ -86,8 +93,10 @@
             fontSize: window.innerWidth > 1024 ? 14 : 12,
         });
 
+        console.assert(editor !== undefined, 'onMount : editor is undefined');
+
         /**
-         * Subscribe to changes in the editor
+         * Subscribe to changes in the editor, and update the content
          */
         editor.onDidChangeModelContent(() => {
             const text = editor.getValue();
@@ -105,18 +114,21 @@
             },
         };
 
+        // Get the current code in the editor
         code = editor.getValue();
 
-        // Check the window, editor, and myList
+        console.assert(code !== undefined, 'onMount : initial code is undefined');
+
         console.assert(window !== undefined, 'onMount : window is undefined');
-        console.assert(editor !== undefined, 'onMount : editor is undefined');
         console.assert(myList !== undefined, 'onMount : myList is undefined');
 
+        // Set the window variables
         window.editor = editor;
         window.myList = myList;
         window.updateEditorWindow = () =>  {window.code = editor.getValue()};
         window.updateList = updateList;
 
+        // Update the editor dimensions
         updateEditorDimensions();
 
         // Update the editor dimensions when the window is resized
@@ -135,7 +147,7 @@
      */
     async function updateList(arr){ 
         console.assert(arr !== undefined, 'updateList : arr is undefined');
-        console.assert(Array.isArray(arr), 'updateList : arr is not an array');
+        // console.assert(Array.isArray(arr), 'updateList : arr is not an array');
         selectedList.set(arr);
     }
 

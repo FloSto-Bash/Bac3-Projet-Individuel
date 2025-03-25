@@ -13,7 +13,7 @@
     let keys = writable([]);
     let actualStats = $derived('Stats-' + String(extractInteger(actualCode)));
 
-    // Define the state variables
+    // Define variables
     let comparedIndices = $state([]);
     let swapIndices = $state([]);
 
@@ -38,6 +38,7 @@
     let ecartType = $state(0);
     let allStats = $derived([executionCount, executionTime.toFixed(3), swapCount, compareCount, averageTime.toFixed(3), ecartType.toFixed(3)]);
 
+    // Define the animation variables
     const maxAnimation = 50;
     let animationInput = $state(maxAnimation/2);
     let animationTime = $derived(computeAnimationTime(animationInput));
@@ -49,11 +50,17 @@
     /**
      * Compute the animation time based on the input
      * Note : The animation time is computed as 50 * (maxAnimation - animationInput), 50 an arbitrary value in milliseconds
+     * @returns {number} The animation time
      */
     function computeAnimationTime() {
         return 50 * (maxAnimation - animationInput);
     }
 
+    /**
+     * Sync the stats with the local storage
+     * @returns {undefined}, if the localStorage already exists
+     * @returns {function} The clearInterval function
+     */
     function syncStatsWithLocalStorage() {
         if (localStorage.getItem(actualStats) !== null ) return;
 
@@ -67,12 +74,14 @@
     };
 
     /**
-     * On mount, reset the grid to the selected list and set the window functions and variables
+     * On mount, reset the grid to the selected list, set the window functions and variables, and set the localStorage stats.
     */
     onMount(() => {
 
+        // Reset the grid to the selected list
         resetGrid();
 
+        // Set the window functions and variables
         window.compareOnDiagram = compareOnDiagram;
         window.stopComparing = stopComparing;
 
@@ -103,6 +112,7 @@
         window.deleteStats = (key) => deleteLocalStorageStats(key);
         window.selectLocalStorageStats = () => selectStats();
 
+        // Set the localStorage stats
         if (localStorage.getItem(actualStats) === null) {
             keys.set(Object.keys(localStorage));
             syncStatsWithLocalStorage();
@@ -111,46 +121,60 @@
         }
     });
 
+    /**
+     * Update the localStorage stats
+    */
     $effect(() => {
         localStorage.setItem(actualStats, allStats);
         keys.set(Object.keys(localStorage));
     })
 
+    /**
+     * Delete a specific localStorage stats
+     * @param {string} key
+    */
     function deleteLocalStorageStats(key) {
         key = "Stats-" + String(extractInteger(key));
         localStorage.removeItem(key);
         keys.set(Object.keys(localStorage));
     }
 
+    /**
+     * Update the execution time
+     * @param {number} value
+    */
     function updateExecutionTime (value) {
         executionTime = value;
         executionTimeList.push(executionTime);
     }
 
+    /**
+     * Select the stats from the localStorage
+    */
     function selectStats() {
-        // executionCount, executionTime, swapCount, compareCount, averageTime, ecartType = localStorage.getItem(actualStats);
         let stats = localStorage.getItem(actualStats);
         
         // Code from GitHub Copilot
         if (stats) {
-        stats = stats.split(',').map((stat, index) => {
-            if (index === 0 || index === 2 || index === 3) {
-                return parseInt(stat, 10);
-            } else {
-                return parseFloat(stat);
-            }
-        });
+            stats = stats.split(',').map((stat, index) => {
+                if (index === 0 || index === 2 || index === 3) {
+                    return parseInt(stat, 10);
+                } else {
+                    return parseFloat(stat);
+                }
+            });
 
-        // Assigner les valeurs aux variables correspondantes
-        executionCount = stats[0];
-        executionTime = stats[1];
-        swapCount = stats[2];
-        compareCount = stats[3];
-        averageTime = stats[4];
-        ecartType = stats[5];
-    }
+            // Assigner les valeurs aux variables correspondantes
+            executionCount = stats[0];
+            executionTime = stats[1];
+            swapCount = stats[2];
+            compareCount = stats[3];
+            averageTime = stats[4];
+            ecartType = stats[5];
+        }
     }
 
+    // Define the scales
     const xScale = $derived(scaleLinear().domain([0, arrayLength]).range([padding.left, width - padding.right]));
 
     const yScale = $derived(scaleLinear().domain([0, Math.max(...get(selectedList))]).range([height - padding.bottom, padding.top]));
@@ -197,9 +221,11 @@
         if (swap) {swapIndices = [a, b];}
     }
 
+    /**
+     * Reset all the stats, except the execution count
+    */
     function resetStats() {
         executionTimeList = [];
-
         executionTime = 0;
         swapCount = 0;
         compareCount = 0;
@@ -221,7 +247,7 @@
 
 <svelte:head>
     <script type="module" src="https://pyscript.net/releases/2025.3.1/core.js"></script>
-    <script type="py" src="python/main.py" config="python/config/pyscript.json"></script>
+    <script type="py" src="python/src/main.py" config="python/config/pyscript.json"></script>
 </svelte:head>
 
 <div class="form-control flex flex-col items-center">
