@@ -2,6 +2,7 @@ from pyscript import document, sync # type: ignore
 from time import time, sleep
 from js import postMessage # type: ignore
 import pyodide # type: ignore
+
 # from restricted.RestrictImports import RestrictImports # Temporary : this import is not working, so the class is copied below
 # from restricted.RestrictVariableRedefinition import RestrictVariableRedefinition # Temporary : this import is not working, so the class is copied below
 

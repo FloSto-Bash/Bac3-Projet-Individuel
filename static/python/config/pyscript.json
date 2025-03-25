@@ -1,4 +1,4 @@
 {
     "package": ["pyscript", "pyodide", "ast", "time", "copy", "js"],
-    "interpreter": "https://cdn.jsdelivr.net/pyodide/v0.27.0/full/pyodide.mjs" 
+    "interpreter": "https://cdn.jsdelivr.net/pyodide/v0.27.4/full/pyodide.mjs" 
 }
