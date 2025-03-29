@@ -1,12 +1,11 @@
 import ast
 
-# Liste des modules restreints
 RESTRICTED_MODULES = {'os', 'sys', 'subprocess', 'shutil', 'socket', 'http', 'ftplib', 'pickle'}
 RESTRICTED_VARIABLES = {'myList'}
 
 def check_import(node):
     '''
-    Vérifie les imports pour restreindre certains modules
+    Checks "import ..." to restrict some modules
     
     Parameters:
     -----------
@@ -14,16 +13,16 @@ def check_import(node):
     
     Raises:
     -------
-    Exception: Si un module restreint est importé
+    Exception: If a restricted module is imported
     '''
-    assert hasattr(node, 'names') and isinstance(node.names, list), "Node does not have 'names' attribute or it is not a list"
+    assert hasattr(node, 'names') and isinstance(node.names, list), "Node does not have 'names' attribute or it is not a list, in check_import"
     for alias in node.names:
         if alias.name in RESTRICTED_MODULES:
             raise Exception(f"Importing '{alias.name}' module is not allowed")
 
 def check_import_from(node):
     '''
-    Vérifie les imports "from ... import ..." pour restreindre certains modules
+    Checks "from ... import ..." imports to restrict some modules
     
     Parameters:
     -----------
@@ -31,15 +30,15 @@ def check_import_from(node):
     
     Raises:
     -------
-    Exception: Si un module restreint est importé
+    Exception: If a restricted module is imported
     '''
-    assert hasattr(node, 'module'), "Node does not have 'module' attribute"
+    assert hasattr(node, 'module'), "Node does not have 'module' attribute, in check_import_from"
     if node.module in RESTRICTED_MODULES:
         raise Exception(f"Importing from '{node.module}' module is not allowed")
 
 def check_attribute(node):
     '''
-    Vérifie l'accès aux modules restreints via des attributs
+    Checks access to restricted modules via attributes
     
     Parameters:
     -----------
@@ -47,15 +46,15 @@ def check_attribute(node):
     
     Raises:
     -------
-    Exception: Si un module restreint est accédé
+    Exception: If a restricted module is accessed
     '''
-    assert hasattr(node, 'value'), "Node does not have 'value' attribute"
+    assert hasattr(node, 'value'), "Node does not have 'value' attribute, in check_attribute"
     if isinstance(node.value, ast.Name) and node.value.id in RESTRICTED_MODULES:
         raise Exception(f"Access to '{node.value.id}' module is not allowed")
 
 def check_variable_redefinition(node):
     '''
-    Vérifie la redéfinition de certaines variables
+    Checks redefinition of certain variables
     
     Parameters:
     -----------
@@ -63,16 +62,16 @@ def check_variable_redefinition(node):
     
     Raises:
     -------
-    Exception: Si une variable restreinte est redéfinie
+    Exception: If a restricted variable is redefined
     '''
-    assert hasattr(node, 'targets') and isinstance(node.targets, list), "Node does not have 'targets' attribute or it is not a list"
+    assert hasattr(node, 'targets') and isinstance(node.targets, list), "Node does not have 'targets' attribute or it is not a list, in check_variable_redefinition"
     for target in node.targets:
         if isinstance(target, ast.Name) and target.id in RESTRICTED_VARIABLES:
             raise Exception(f"Redefining '{target.id}' variable is not allowed")
   
 def check_node(node):
     '''
-    Vérifie les imports et l'accès aux modules restreints
+    Checks the AST node for restricted imports, attributes, and variable redefinitions
     
     Parameters:
     -----------
@@ -80,9 +79,15 @@ def check_node(node):
     
     Raises:
     -------
-    Exception: Si un module restreint est importé ou accédé
+    Exception: If a restricted module is imported, accessed, or used in a call
+    
+    Note:
+    -----
+    This function traverses the AST node and its children to ensure that no restricted modules
+    are imported, accessed, or used in a call. It also checks for redefinitions of certain variables.
+    It raises an exception if any restricted module is found.
     '''
-    assert hasattr(node, 'body') and isinstance(node.body, list), "Node does not have 'body' attribute or it is not a list"
+    assert hasattr(node, 'body') and isinstance(node.body, list), "Node does not have 'body' attribute or it is not a list, in check_node"
     for child in node.body:
         if isinstance(child, ast.Import):
             check_import(child)

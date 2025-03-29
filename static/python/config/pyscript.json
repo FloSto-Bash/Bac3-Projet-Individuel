@@ -1,7 +1,7 @@
 {
-    "package": ["ast", "pyscript", "pyodide", "ast", "time", "copy", "js"],
+    "package": ["ast", "pyscript", "pyodide", "time", "copy", "js"],
     "interpreter": "https://cdn.jsdelivr.net/pyodide/v0.27.0/full/pyodide.mjs",
     "files" : {
-        "../src/restricted_checks.py" : ""
+        "../src/restricted_checks.py": "restricted_checks.py"
     }
 }

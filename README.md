@@ -1,58 +1,83 @@
-# create-svelte
+# Show My Sort : documentation
 
-Everything you need to build a Svelte library, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+## Project Overview
+This project was realized as part of the course "Projet inidividuel" at the University of Namur, during the academic year 2024-2025.
+The project is a web application that allows users to code sorting algorithms in Python and visualize their execution in real-time. The application is built using PyScript, a framework that allows Python code to run in the browser.
 
-Read more about creating a library [in the docs](https://svelte.dev/docs/kit/packaging).
-
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
-
+## Project Structure
 ```bash
-# create a new project in the current directory
-npx sv create
+project/
+├── ...
+├── .svelte-kit/
+│   ├── ...
+├── src/
+│   ├── app.css
+│   ├── app.html
+│   ├── lib/
+│   │   ├── ...
+│   ├── routes/
+│   │   ├── ...
+│   │   ├── +page.svelte
+│   │   └── components/
+│   │       ├── diagram.svelte
+│   │       └── editor.svelte
+├── static/
+│   ├── icon/
+│   ├── logo/
+│   ├── python/
+│   │   ├── src/
+│   │   │   ├── main.py
+│   │   │   ├── restricted_checks.py
+│   │   │   ├── worker.py
+│   │   └── config/
+│   │       └── pyscript.json
 
-# create a new project in my-app
-npx sv create my-app
 ```
 
-## Developing
+## Main dependencies
+- [PyScript](https://pyscript.net/)
+- [Svelte](https://svelte.dev/)
+- [Monaco Editor](https://microsoft.github.io/monaco-editor/)
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## Installation
+To run the project locally, please follow these steps:
 
+1. Ensure to be in the root directory of the project. If it is not the case, you are probably in the 'SMS-01' directory. In this case, please run the following command:
+```bash
+cd project
+```
+2. Install the dependencies:
+```bash
+npm install
+```
+3. Start the development server:
 ```bash
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
+4. Open your browser and navigate to `http://localhost:5173/`, or click on the link provided in the terminal.
+5. You can now start coding and visualizing sorting algorithms in Python!
 
-Everything inside `src/lib` is part of your library, everything inside `src/routes` can be used as a showcase or preview app.
+## Usage
+Show My Sort is a reactive web application, that allows users to code sorting algorithms in Python and visualize their execution in real-time. The application provides :
 
-## Building
+- A code editor powered by Monaco Editor, which supports syntax highlighting and auto-completion.
+- A diagram that visualizes the sorting process in real-time.
+- Customizable parameters for the sorting algorithms, such as the array to sort, the speed of the visualization, visualization of comparisons and swaps and statistics.
+- A console that displays the state of the running code, including error messages.
+- A button to reset the grid, run the code and reset the statistics.
+- Buttons to download the code and upload a new one.
+- A local storage feature that saves the code and statistics, so you can continue where you left off.
+- A light/dark mode.
+- The possibility for the user to choose the light/dark mode of the editor independently of the application.
 
-To build your library:
+## Known Issues
+Despite the fact that the application is fully functional, some issues have been identified. They are listed below:
 
-```bash
-npm run package
-```
+1. Issue on iPadOS devices, with the upper version of pyodide 0.27.0. The error message is `RangeError: Maximum call stack size exceeded`. This issue is not present on other devices. See [interpreter-explanation.md](static/python/config/interpreter-explaination.md) for more details.
+2. If you have played a little with the application, you may have seen the following message in the output console : "Something went wrong... please try again". This message indicates that an error occured during the execution of the code. Such errors are not due to the application's code, but rather to the parsing of JSON content. It can only be minimized, but not completely avoided. 
 
-To create a production version of your showcase app:
+## Contacts
+Please feel free to contact me if you have any questions, suggestions, or issues. You can use the contact button available on the web application for this purpose.
 
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
-
-## Publishing
-
-Go into the `package.json` and give your package the desired name through the `"name"` option. Also consider adding a `"license"` field and point it to a `LICENSE` file which you can create from a template (one popular option is the [MIT license](https://opensource.org/license/mit/)).
-
-To publish your library to [npm](https://www.npmjs.com):
-
-```bash
-npm publish
-```
+## License
+This project is licensed under the MIT License. See the [LICENSE](../LICENSE) file for details.

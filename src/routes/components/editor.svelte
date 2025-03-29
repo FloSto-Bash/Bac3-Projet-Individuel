@@ -2,7 +2,7 @@
     import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 
     import { onMount } from "svelte";
-    import { selectedList } from "$lib/selectedList.js";
+    import { selectedList, updateList } from "$lib/selectedList.js";
     import { initialCode } from "$lib/initialCode.js";
 
     // Declare variables
@@ -45,7 +45,7 @@
 
         // Fix the height of the editor, if smaller than 478
         if (height < 478 * 0.98) {
-            height = 478 * 0.98;
+            height = 478;
         }
         
         // Check the width and height
@@ -140,16 +140,6 @@
             window.removeEventListener('resize', updateEditorDimensions);
         };
     });
-
-    /**
-     * Update the list
-     * @param {Array} arr - The new list
-     */
-    async function updateList(arr){ 
-        console.assert(arr !== undefined, 'updateList : arr is undefined');
-        // console.assert(Array.isArray(arr), 'updateList : arr is not an array');
-        selectedList.set(arr);
-    }
 
     /**
      * Update the editor with the new code

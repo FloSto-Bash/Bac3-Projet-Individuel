@@ -1,7 +1,7 @@
 import unittest
 import ast
 
-from ..src.restricted_checks import check_import, check_import_from, check_attribute, check_variable_redefinition
+from project.static.python.src.restricted_checks import *
 
 class TestRestrictImports(unittest.TestCase):
     
@@ -146,6 +146,95 @@ class TestRestrictImports(unittest.TestCase):
         )
         
         check_variable_redefinition(assign_node)
+
+    # Test cases for check_node
+    def test_check_node_with_invalid_import(self):
+        '''
+        Test case for check_node with an invalid import
+        '''
+        code = "import os"
+        node = ast.parse(code)
+        
+        with self.assertRaises(Exception) as context:
+            check_node(node)
+        
+        self.assertEqual(str(context.exception), "Importing 'os' module is not allowed")
+
+    def test_check_node_with_valid_import(self):
+        '''
+        Test case for check_node with a valid import
+        '''
+        code = "import random"
+        node = ast.parse(code)
+        
+        # Should not raise any exception
+        check_node(node)
+
+    def test_check_node_with_invalid_import_from(self):
+        '''
+        Test case for check_node with an invalid import from
+        '''
+        code = "from os import getcwd"
+        node = ast.parse(code)
+        
+        with self.assertRaises(Exception) as context:
+            check_node(node)
+        
+        self.assertEqual(str(context.exception), "Importing from 'os' module is not allowed")
+
+    def test_check_node_with_valid_import_from(self):
+        '''
+        Test case for check_node with a valid import from
+        '''
+        code = "from random import randint"
+        node = ast.parse(code)
+        
+        # Should not raise any exception
+        check_node(node)
+
+    def test_check_node_with_invalid_attribute(self):
+        '''
+        Test case for check_node with an invalid attribute
+        '''
+        code = "os.getcwd"
+        node = ast.parse(code)
+        
+        with self.assertRaises(Exception) as context:
+            check_node(node)
+        
+        self.assertEqual(str(context.exception), "Access to 'os' module is not allowed")
+
+    def test_check_node_with_valid_attribute(self):
+        '''
+        Test case for check_node with a valid attribute
+        '''
+        code = "random.randint"
+        node = ast.parse(code)
+        
+        # Should not raise any exception
+        check_node(node)
+
+    def test_check_node_with_invalid_variable_redefinition(self):
+        '''
+        Test case for check_node with an invalid variable redefinition
+        '''
+        code = "myList = []"
+        node = ast.parse(code)
+        
+        with self.assertRaises(Exception) as context:
+            check_node(node)
+        
+        self.assertEqual(str(context.exception), "Redefining 'myList' variable is not allowed")
+
+    def test_check_node_with_valid_variable_redefinition(self):
+        '''
+        Test case for check_node with a valid variable redefinition
+        '''
+        code = "myVariable = []"
+        node = ast.parse(code)
+        
+        # Should not raise any exception
+        check_node(node)
 
 if __name__ == '__main__':
     unittest.main()

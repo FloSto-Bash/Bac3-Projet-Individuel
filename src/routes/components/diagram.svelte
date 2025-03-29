@@ -6,8 +6,10 @@
     import { selectedList } from '../../lib/selectedList.js';
     import { get, writable } from 'svelte/store';
 
+    import { extractInteger } from '$lib/extractInteger.js';
+
     // Get the unsorted lists from the parent component
-    let { unsortedLists, isDarkMode, pyscriptReady, actualCode, extractInteger } = $props();
+    let { unsortedLists, isDarkMode, pyscriptReady, actualCode } = $props();
 
     // init variables for localStorage
     let keys = writable([]);
@@ -143,18 +145,18 @@
      * Update the execution time
      * @param {number} value
     */
-    function updateExecutionTime (value) {
+    export function updateExecutionTime (value) {
         executionTime = value;
         executionTimeList.push(executionTime);
     }
 
     /**
-     * Select the stats from the localStorage
-    */
-    function selectStats() {
+     * Select the stats from the localStorage and update the corresponding variables
+     * @returns {undefined}, if the localStorage doesn't exist
+     */
+    export function selectStats() {
         let stats = localStorage.getItem(actualStats);
         
-        // Code from GitHub Copilot
         if (stats) {
             stats = stats.split(',').map((stat, index) => {
                 if (index === 0 || index === 2 || index === 3) {
@@ -164,7 +166,7 @@
                 }
             });
 
-            // Assigner les valeurs aux variables correspondantes
+            // Assign the values to the corresponding variables
             executionCount = stats[0];
             executionTime = stats[1];
             swapCount = stats[2];
@@ -184,6 +186,7 @@
 
     /**
      * Reset the grid to the selected list
+     * @returns {undefined}, if the selected list is not found
     */
     function resetGrid() {
         let foundList = unsortedLists.find(list => list.name === selectedListName);
@@ -201,14 +204,14 @@
      * @param {number} a
      * @param {number} b
     */
-    async function compareOnDiagram(a, b) {
+    export function compareOnDiagram(a, b) {
         if (compare) {comparedIndices = [a, b];}
     }
 
     /**
      * Stop comparing elements on the diagram
     */
-    async function stopComparing() {
+    export function stopComparing() {
         if (compare) {comparedIndices = [];}
     }
 
@@ -217,12 +220,13 @@
      * @param {number} a
      * @param {number} b
     */
-    async function swapOnDiagram(a, b) {
+    export function swapOnDiagram(a, b) {
         if (swap) {swapIndices = [a, b];}
     }
 
     /**
      * Reset all the stats, except the execution count
+     * @notes The execution count is not reset because it is used to compute the average time
     */
     function resetStats() {
         executionTimeList = [];
@@ -235,14 +239,14 @@
     }
 
     /**
-     * Set a timeout to reset the swap indices, after a certain time
+     * Set a timeout to reset the swap indices, after the animation time
      * @param {number} time
     */
     $effect(() => {
         if (swapIndices.length > 0) {
             setTimeout(() => (swapIndices = []), animationTime);
-        };
-    });
+        }
+    })
 </script>
 
 <svelte:head>

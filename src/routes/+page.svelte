@@ -1,4 +1,4 @@
-<!-- All svg files coming from : Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+<!-- All svg files are coming from : Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
 <script>
   import Editor from "./components/editor.svelte";
   import Diagram from "./components/diagram.svelte";
@@ -11,6 +11,7 @@
   import { writable } from "svelte/store";
 
   import { initialCode } from "$lib/initialCode.js";
+  import { extractInteger } from "$lib/extractInteger.js";
 
   // Create variable for the historical code and states
   let keys = writable([]);
@@ -174,15 +175,6 @@
   }
 
   /**
-   * Extract the integer from a string
-   * @param {string} str - The string to extract the integer from
-   * @returns {Number} - The extracted integer
-   */
-  function extractInteger(str){
-    return str.match(/\d+/g).map(Number)[0];
-  }
-
-  /**
    * Select the localStorage
    * @param {string} key - The key to select
    */
@@ -193,6 +185,7 @@
     // update the actual code variable
     code = localStorage.getItem(actualCode);
     window.selectLocalStorageStats();
+    window.resetGrid();
   }
 
   /**
@@ -367,7 +360,7 @@
       class="grid p-2"
       style="border: 0.5px solid #000; border-radius: 15px;"
     >
-      <Diagram {unsortedLists} {isDarkMode} {pyscriptReady} {actualCode} {extractInteger}/>
+      <Diagram {unsortedLists} {isDarkMode} {pyscriptReady} {actualCode}/>
     </div>
   </div>
 
@@ -441,7 +434,6 @@
         class="flex items-center"
       >
         <img src="/logo/UNamur-vertical.svg" alt="UNamur logo" class="w-40" />
-        <!-- <h2>UNamur site</h2> -->
       </a>
     </button>
   </nav>
